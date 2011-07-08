@@ -48,6 +48,12 @@ function wp_fix_server_vars() {
 
 	$_SERVER = array_merge( $default_server_values, $_SERVER );
 
+	// Fix bad assumption of REQUEST_URI
+	// http://en.wikipedia.org/wiki/URI_scheme#Examples
+	// http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
+	// Trac Ticket: http://core.trac.wordpress.org/ticket/17047
+	$_SERVER[ 'REQUEST_URI' ] = preg_replace( '(^https?://' . $_SERVER[ 'HTTP_HOST' ] . ')i' , NULL , $_SERVER[ 'REQUEST_URI' ] );
+
 	// Fix for IIS when running with PHP ISAPI
 	if ( empty( $_SERVER['REQUEST_URI'] ) || ( php_sapi_name() != 'cgi-fcgi' && preg_match( '/^Microsoft-IIS\//', $_SERVER['SERVER_SOFTWARE'] ) ) ) {
 
